@@ -1,10 +1,15 @@
 %Start queue
 q = LinkedList();
 
-%Initialize Labels structure
-
+%Initialize Labels structure, each 'point' has a label (0 or 1) a
+%'thickness'(<?) and maxima values from when they were labeld. 
 binarySurf=zeros(size(grad));
 
+maximaSurf=zeros([size(grad) 2]); % Need to store 2 things 
+
+thicknessSurf=zeros(size(grad));
+
+%Pick a start point
 q. add([42, 100, 21]);
 
 max_x = 55;
@@ -13,7 +18,7 @@ max_z = 93;
 
 count = 0;
 
-while q.size()~=0 && count < 100000
+while q.size()~=0 && count < 10000
     
     count = count +1;
     
@@ -29,7 +34,24 @@ while q.size()~=0 && count < 100000
     
     searchz = startz;
     
-    binarySurf(startx,starty,startz)=1;
+    %get pts surrounding
+
+%     range = -10:10;
+% 
+%     xdir = zeros(size(range));
+%     ydir = zeros(size(range));
+%     zdir = zeros(size(range));
+% 
+%     for off = 1:length(range)
+% 
+%         xdir(off) = grad(startx+range(off),starty,startz);
+% 
+%         ydir(off) = grad(startx,starty+range(off),startz);
+% 
+%         zdir(off) = grad(startx,starty,startz+range(off));
+% 
+%     end
+    
     
     
     
@@ -142,6 +164,25 @@ while q.size()~=0 && count < 100000
     
     zdist=F-B;
     
+    %Symmetry check
+    
+    sym_thr = 2;
+    
+    if abs((R-startx) - (startx-L)) > sym_thr
+        %not symmetrical
+    end
+    
+    if abs((U-starty) - (starty-D)) > sym_thr
+        %not symmetrical
+    end
+    
+    if abs((F-startx) - (startz-B)) > sym_thr
+        %not symmetrical
+    end
+    
+    
+        
+    
     [m,i] = min([xdist ydist zdist]);
     
     if i==1
@@ -149,17 +190,25 @@ while q.size()~=0 && count < 100000
         xdiff = [0 0 0 0];
         ydiff = [1 0 -1 0];
         zdiff = [0 1 0 -1];
+        thickness = xdist;
+        max1 = grad(R,starty,startz);
+        max2 = grad(L,starty,startz);
     elseif i==2
         
         xdiff = [1 0 -1 0];
         ydiff = [0 0 0 0];
         zdiff = [0 1 0 -1];
+        thickeness = ydist;
+        max1 = grad(startx,U,startz);
+        max2 = grad(startx,D,startz);
     elseif i==3
         
         xdiff = [1 0 -1 0];
         ydiff = [0 1 0 -1];
         zdiff = [0 0 0 0];
-        
+        thickness = zdist;
+        max1 = grad(startx,starty,F);
+        max2 = grad(startx,starty,B);
     end
     for ii = 1:4
         xp = startx+xdiff(ii);
@@ -173,6 +222,10 @@ while q.size()~=0 && count < 100000
         if binarySurf(xp,yp,zp) ~= 1
             q.add([xp,yp,zp]);
             binarySurf(xp,yp,zp) = 1;
+            maximaSurf(xp,yp,zp, 1) = max1;
+            maximaSurf(xp,yp,zp, 2) = max2;
+            thicknessSurf(xp,yp,zp) = thickness;
+            
         end
     end
 end
