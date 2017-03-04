@@ -1,8 +1,13 @@
 %Start queue
 q = LinkedList();
 
-%Initialize Labels structure
+%Initialize Labels structure, each 'point' has a label (0 or 1) a
+%'thickness'(<?) and maxima values from when they were labeld. 
 binarySurf=zeros(size(grad));
+
+maximaSurf=zeros([size(grad) 2]); % Need to store 2 things 
+
+thicknessSurf=zeros(size(grad));
 
 %Pick a start point
 q. add([42, 100, 21]);
@@ -29,7 +34,24 @@ while q.size()~=0 && count < 100000
     
     searchz = startz;
     
-    binarySurf(startx,starty,startz)=1;
+    %get pts surrounding
+
+%     range = -10:10;
+% 
+%     xdir = zeros(size(range));
+%     ydir = zeros(size(range));
+%     zdir = zeros(size(range));
+% 
+%     for off = 1:length(range)
+% 
+%         xdir(off) = grad(startx+range(off),starty,startz);
+% 
+%         ydir(off) = grad(startx,starty+range(off),startz);
+% 
+%         zdir(off) = grad(startx,starty,startz+range(off));
+% 
+%     end
+    
     
     
     
@@ -150,11 +172,11 @@ while q.size()~=0 && count < 100000
         %not symmetrical
     end
     
-        if abs((R-startx) - (startx-L)) > sym_thr
+    if abs((U-starty) - (starty-D)) > sym_thr
         %not symmetrical
-        end
+    end
     
-            if abs((R-startx) - (startx-L)) > sym_thr
+    if abs((F-startx) - (startz-B)) > sym_thr
         %not symmetrical
     end
     
@@ -168,6 +190,7 @@ while q.size()~=0 && count < 100000
         xdiff = [0 0 0 0];
         ydiff = [1 0 -1 0];
         zdiff = [0 1 0 -1];
+        
     elseif i==2
         
         xdiff = [1 0 -1 0];
@@ -192,6 +215,10 @@ while q.size()~=0 && count < 100000
         if binarySurf(xp,yp,zp) ~= 1
             q.add([xp,yp,zp]);
             binarySurf(xp,yp,zp) = 1;
+            maximaSurf(xp,yp,zp, 1) = ?
+            maximaSurf(xp,yp,zp, 2) = ?
+            thicknessSurf(xp,yp,zp) = ?
+            
         end
     end
 end
